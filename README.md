@@ -1,2 +1,2 @@
 # algs4
-Repo for programming assignments in Algoirithms, Part 1 course
+Repo for programming assignments in Algorithms, Part 1 course
