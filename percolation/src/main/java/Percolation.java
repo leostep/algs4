@@ -4,9 +4,8 @@ public class Percolation {
 
     private static final int TOP = 0;
 
-    private final int bottom;
     private final boolean[] open;
-    //    private final boolean[] directlyConnectedToTop;
+    private final boolean[] connectedToBottom;
     private final int n;
     private final WeightedQuickUnionUF uf;
     private int openSites = 0;
@@ -15,11 +14,10 @@ public class Percolation {
         if (n <= 0) {
             throw new IllegalArgumentException();
         }
-        this.uf = new WeightedQuickUnionUF(n * n + 2);
+        this.uf = new WeightedQuickUnionUF(n * n + 1);
         this.n = n;
         this.open = new boolean[n * n];
-//        this.directlyConnectedToTop = new boolean[n * n];
-        this.bottom = n * n + 1;
+        this.connectedToBottom = new boolean[n * n + 1];
     }
 
     public void open(int row, int col) {
@@ -39,18 +37,14 @@ public class Percolation {
 
     private void connectCells(int cell, int r, int c) {
         if (r == 0) {
-            uf.union(cell, TOP);
-//            directlyConnectedToTop[cell - 1] = true;
+            uf.union(TOP, cell);
         } else if (r == n + 1) {
-            uf.union(cell, bottom);
+            connectedToBottom[uf.find(cell)] = true;
         } else if (c > 0 && c <= n && isOpen(r, c)) {
             int otherCell = toCellNum(r, c);
+            boolean con = connectedToBottom[uf.find(cell)] || connectedToBottom[uf.find(otherCell)];
             uf.union(cell, otherCell);
-//            if (directlyConnectedToTop[otherCell - 1]) {
-//                directlyConnectedToTop[cell - 1] = true;
-//            } else if (directlyConnectedToTop[cell - 1]) {
-//                directlyConnectedToTop[otherCell - 1] = true;
-//            }
+            connectedToBottom[uf.find(cell)] = con;
         }
     }
 
@@ -61,7 +55,6 @@ public class Percolation {
 
     public boolean isFull(int row, int col) {
         checkBounds(row, col);
-//        return directlyConnectedToTop[toCellNum(row, col) - 1];
         return uf.connected(toCellNum(row, col), TOP);
     }
 
@@ -70,7 +63,7 @@ public class Percolation {
     }
 
     public boolean percolates() {
-        return uf.connected(TOP, bottom);
+        return connectedToBottom[uf.find(TOP)];
     }
 
     private void checkBounds(int row, int col) {
