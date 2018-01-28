@@ -6,7 +6,7 @@
 
     <artifactId>percolation</artifactId>
     <parent>
-        <groupId>com.github.stepanel</groupId>
+        <groupId>com.github.leostep</groupId>
         <artifactId>algs4</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
