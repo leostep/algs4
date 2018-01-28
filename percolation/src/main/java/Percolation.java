@@ -44,7 +44,9 @@ public class Percolation {
             int otherCell = toCellNum(r, c);
             boolean con = connectedToBottom[uf.find(cell)] || connectedToBottom[uf.find(otherCell)];
             uf.union(cell, otherCell);
-            connectedToBottom[uf.find(cell)] = con;
+            if (con) {
+                connectedToBottom[uf.find(cell)] = con;
+            }
         }
     }
 
