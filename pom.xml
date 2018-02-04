@@ -11,7 +11,13 @@
 
     <modules>
         <module>percolation</module>
+        <module>queues</module>
     </modules>
+
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
 
     <dependencyManagement>
         <dependencies>
