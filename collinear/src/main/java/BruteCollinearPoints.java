@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Comparator;
 
 public class BruteCollinearPoints {
@@ -93,8 +94,6 @@ public class BruteCollinearPoints {
     }
 
     public LineSegment[] segments() {
-        LineSegment[] res = new LineSegment[segNum];
-        System.arraycopy(segments, 0, res, 0, segNum);
-        return res;
+        return Arrays.copyOf(segments, segNum);
     }
 }
