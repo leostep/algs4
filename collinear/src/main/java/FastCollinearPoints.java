@@ -91,21 +91,4 @@ public class FastCollinearPoints {
         return Arrays.copyOf(segments, segNum);
     }
 
-    public static void main(String[] args) {
-        Point[] points = {
-                new Point(4000, 30000),
-                new Point(3500, 28000),
-                new Point(3000, 26000),
-                new Point(2000, 22000),
-                new Point(13000, 21000),
-                new Point(1000, 18000),
-                new Point(23000, 16000),
-                new Point(28000, 13500),
-                new Point(28000, 5000),
-                new Point(28000, 1000)
-        };
-        FastCollinearPoints fastCollinearPoints = new FastCollinearPoints(points);
-        System.out.println(Arrays.toString(fastCollinearPoints.segments()));
-    }
-
 }
