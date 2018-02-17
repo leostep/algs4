@@ -13,11 +13,14 @@
         <module>percolation</module>
         <module>queues</module>
         <module>collinear</module>
+        <module>8puzzle</module>
     </modules>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <alg4.path>C:/Users/leoni/Downloads/algs4.jar</alg4.path>
     </properties>
 
     <dependencyManagement>
@@ -27,7 +30,7 @@
                 <artifactId>algs4</artifactId>
                 <version>1</version>
                 <scope>system</scope>
-                <systemPath>C:/Users/leoni/Downloads/algs4.jar</systemPath>
+                <systemPath>${alg4.path}</systemPath>
             </dependency>
         </dependencies>
     </dependencyManagement>
