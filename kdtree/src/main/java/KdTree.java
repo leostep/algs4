@@ -121,27 +121,31 @@ public class KdTree {
             return;
         }
         double minSqDist = query.distanceSquaredTo(res[0]);
-        double dst = query.distanceSquaredTo(node.point);
-        if (dst < minSqDist) {
-            res[0] = node.point;
-            minSqDist = dst;
+        if (minSqDist > curRect.distanceSquaredTo(query)) {
+            double dst = query.distanceSquaredTo(node.point);
+            if (dst < minSqDist) {
+                res[0] = node.point;
+                minSqDist = dst;
+            }
         }
         List<RectHV> rects = getChildRects(node.point, curRect, vertical);
         RectHV leftRect = rects.get(0);
         RectHV rightRect = rects.get(1);
-        boolean lCheck = leftRect.distanceSquaredTo(query) <= minSqDist;
-        boolean rCheck = rightRect.distanceSquaredTo(query) <= minSqDist;
+        double leftDist = leftRect.distanceSquaredTo(query);
+        boolean lCheck = leftDist <= minSqDist;
+        double rightDist = rightRect.distanceSquaredTo(query);
+        boolean rCheck = rightDist <= minSqDist;
         if (lCheck && !rCheck) {
             nearest(query, node.left, leftRect, !vertical, res);
         } else if (!lCheck && rCheck) {
             nearest(query, node.right, rightRect, !vertical, res);
         } else if (lCheck) {
-            if (rightRect.contains(query)) {
-                nearest(query, node.right, rightRect, !vertical, res);
+            if (leftDist < rightDist) {
                 nearest(query, node.left, leftRect, !vertical, res);
+                nearest(query, node.right, rightRect, !vertical, res);
             } else {
-                nearest(query, node.left, leftRect, !vertical, res);
                 nearest(query, node.right, rightRect, !vertical, res);
+                nearest(query, node.left, leftRect, !vertical, res);
             }
         }
     }
@@ -152,9 +156,6 @@ public class KdTree {
         }
     }
 
-    /**
-     * intentionally left blank
-     */
     public void draw() {
 
     }
