@@ -1,8 +1,14 @@
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
 public class KdTree {
 
+    private static final RectHV WHOLE_RECT = new RectHV(0, 0, 1, 1);
+    private static final boolean VERTICAL = true;
     private Node root;
 
     public boolean isEmpty() {
@@ -19,7 +25,7 @@ public class KdTree {
 
     public void insert(Point2D p) {
         requireNotNull(p);
-        root = insert(p, root, true);
+        root = insert(p, root, VERTICAL);
     }
 
     private Node insert(Point2D p, Node node, boolean vertical) {
@@ -46,7 +52,7 @@ public class KdTree {
 
     public boolean contains(Point2D p) {
         requireNotNull(p);
-        return contains(p, root, true);
+        return contains(p, root, VERTICAL);
     }
 
     private boolean contains(Point2D p, Node node, boolean vertical) {
@@ -65,24 +71,92 @@ public class KdTree {
         }
     }
 
-    public void draw() {
-
-    }
-
     public Iterable<Point2D> range(RectHV rect) {
         requireNotNull(rect);
-        return null;
+        Collection<Point2D> res = new LinkedList<>();
+        range(rect, root, WHOLE_RECT, VERTICAL, res);
+        return res;
+    }
+
+    private void range(RectHV query, Node node, RectHV current, boolean vertical, Collection<Point2D> res) {
+        if (node == null) {
+            return;
+        }
+        if (query.contains(node.point)) {
+            res.add(node.point);
+        }
+        List<RectHV> rects = getChildRects(node.point, current, vertical);
+        if (query.intersects(rects.get(0))) {
+            range(query, node.left, rects.get(0), !vertical, res);
+        }
+        if (query.intersects(rects.get(1))) {
+            range(query, node.right, rects.get(1), !vertical, res);
+        }
+    }
+
+    private List<RectHV> getChildRects(Point2D point, RectHV current, boolean vertical) {
+        List<RectHV> res = new LinkedList<>();
+        if (vertical) {
+            res.add(new RectHV(current.xmin(), current.ymin(), point.x(), current.ymax()));
+            res.add(new RectHV(point.x(), current.ymin(), current.xmax(), current.ymax()));
+        } else {
+            res.add(new RectHV(current.xmin(), current.ymin(), current.xmax(), point.y()));
+            res.add(new RectHV(current.xmin(), point.y(), current.xmax(), current.ymax()));
+        }
+        return res;
     }
 
     public Point2D nearest(Point2D p) {
         requireNotNull(p);
-        return null;
+        if (isEmpty()) {
+            return null;
+        }
+        Point2D[] res = {root.point};
+        nearest(p, root, WHOLE_RECT, VERTICAL, res);
+        return res[0];
+    }
+
+    private void nearest(Point2D query, Node node, RectHV curRect, boolean vertical, Point2D[] res) {
+        if (node == null) {
+            return;
+        }
+        double minSqDist = query.distanceSquaredTo(res[0]);
+        double dst = query.distanceSquaredTo(node.point);
+        if (dst < minSqDist) {
+            res[0] = node.point;
+            minSqDist = dst;
+        }
+        List<RectHV> rects = getChildRects(node.point, curRect, vertical);
+        RectHV leftRect = rects.get(0);
+        RectHV rightRect = rects.get(1);
+        boolean lCheck = leftRect.distanceSquaredTo(query) <= minSqDist;
+        boolean rCheck = rightRect.distanceSquaredTo(query) <= minSqDist;
+        if (lCheck && !rCheck) {
+            nearest(query, node.left, leftRect, !vertical, res);
+        } else if (!lCheck && rCheck) {
+            nearest(query, node.right, rightRect, !vertical, res);
+        } else if (lCheck) {
+            if (rightRect.contains(query)) {
+                nearest(query, node.right, rightRect, !vertical, res);
+                nearest(query, node.left, leftRect, !vertical, res);
+            } else {
+                nearest(query, node.left, leftRect, !vertical, res);
+                nearest(query, node.right, rightRect, !vertical, res);
+            }
+        }
     }
 
     private void requireNotNull(Object p) {
         if (p == null) {
             throw new IllegalArgumentException();
         }
+    }
+
+    /**
+     * intentionally left blank
+     */
+    public void draw() {
+
     }
 
     private static class Node {
